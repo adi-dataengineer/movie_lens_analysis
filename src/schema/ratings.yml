@@ -1,0 +1,17 @@
+columns:
+  - name: userid
+    type: int64
+    dqt_enabled: True
+    check_name: ["custom"]
+  - name: movieid
+    type: int64
+    dqt_enabled: True
+    check_name: ["custom"]
+  - name: ratings
+    type: int64
+    dqt_enabled: True
+    check_name: ["custom"]
+  - name: timestamp
+    type: "datetime64[s]"
+    dqt_enabled: False
+    check_name: ["None"]
