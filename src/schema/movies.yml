@@ -1,0 +1,13 @@
+columns:
+  - name: movieid
+    type: int64
+    dqt_enabled: True
+    check_name: ["unique", "custom"]
+  - name: titles
+    type: string
+    dqt_enabled: False
+    check_name: ["None"]
+  - name: genres
+    type: object
+    dqt_enabled: False
+    check_name: ["None"]

@@ -1,0 +1,21 @@
+columns:
+  - name: userid
+    type: int64
+    dqt_enabled: True
+    check_name: ["unique", "custom"]
+  - name: gender
+    type: string
+    dqt_enabled: True
+    check_name: ["custom"]
+  - name: age
+    type: int64
+    dqt_enabled: True
+    check_name: ["custom"]
+  - name: occupation
+    type: int64
+    dqt_enabled: True
+    check_name: ["custom"]
+  - name: zipcode
+    type: string
+    dqt_enabled: False
+    check_name: ["None"]
