@@ -18,7 +18,7 @@ class UserDataValidator:
 
     @staticmethod
     def validate_gender(gender):
-        return gender in ['M', 'F']
+        return gender in ["M", "F"]
 
     @staticmethod
     def validate_age(age):
@@ -82,11 +82,10 @@ def validate_dataset(validator_name, df, file_schema_path):
     validator_class = globals().get(validator_name, None)
     validation_results = {}
 
-    with open(file_schema_path, 'r') as file:
+    with open(file_schema_path, "r") as file:
         file_schema = yaml.safe_load(file)
 
-    unique_check_columns = [col['name'] for col in file_schema['columns'] if
-                            col['dqt_enabled'] and 'unique' in col['check_name']]
+    unique_check_columns = [col["name"] for col in file_schema["columns"] if col["dqt_enabled"] and "unique" in col["dqt_type"]]
 
     if unique_check_columns:
         for column in unique_check_columns:
@@ -97,23 +96,36 @@ def validate_dataset(validator_name, df, file_schema_path):
             if unique_values == total_values:
                 validation_result = True
             else:
-                print(f"Data validation failed for column: {column}, in dataset: {validator_name}")
+                print(f"Unique check validation failed for column: {column}, in dataset: {validator_name}")
+                validation_result = False
+
+            validation_results[column] = validation_result
+
+    not_null_check_columns = [col["name"] for col in file_schema["columns"] if col["dqt_enabled"] and "not_null" in col["dqt_type"]]
+
+    if not_null_check_columns:
+        for column in not_null_check_columns:
+            column_series = df[column]
+            nulls_present = column_series.isnull().any()
+
+            if not nulls_present:
+                validation_result = True
+            else:
+                print(f"Null check validation failed for column: {column}, in dataset: {validator_name}")
                 validation_result = False
 
             validation_results[column] = validation_result
 
     if validator_class is not None:
-
-        validation_columns = [col['name'] for col in file_schema['columns'] if
-                              col['dqt_enabled'] and 'custom' in col['check_name']]
+        validation_columns = [col["name"] for col in file_schema["columns"] if col["dqt_enabled"] and "custom" in col["dqt_type"]]
 
         if validation_columns:
             for column in validation_columns:
-                dqt_func = getattr(validator_class, f'validate_{column}')
+                dqt_func = getattr(validator_class, f"validate_{column}")
                 invalid_df = df[~df[column].apply(dqt_func)]
 
                 if not invalid_df.empty:
-                    print(f"Data validation failed for column: {column}, in dataset: {validator_name}")
+                    print(f"Custom Data validation failed for column: {column}, in dataset: {validator_name}")
                     validation_result = False
                 else:
                     validation_result = True
