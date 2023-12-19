@@ -1,0 +1,25 @@
+columns:
+  - name: movieid
+    type: int64
+    dqt_enabled: True
+    dqt_type: ["not_null"]
+  - name: titles
+    type: string
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: genres
+    type: object
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: max_rating
+    type: float64
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: min_rating
+    type: float64
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: avg_rating
+    type: float64
+    dqt_enabled: False
+    dqt_type: ["None"]

@@ -1,0 +1,25 @@
+columns:
+  - name: userid
+    type: int64
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: movieid
+    type: int64
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: ratings
+    type: int64
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: timestamp
+    type: "datetime64[s]"
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: titles
+    type: string
+    dqt_enabled: False
+    dqt_type: ["None"]
+  - name: genres
+    type: object
+    dqt_enabled: False
+    dqt_type: ["None"]
