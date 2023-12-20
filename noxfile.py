@@ -52,6 +52,7 @@ def clean_folders(session: nox.Session):
 def exec_pipeline(session: nox.Session):
     session.chdir('src')
     movie_lens_analysis_pipeline('config.ini')
+    session.notify("exec_tests")
 
 
 @nox.session(python=python_versions, reuse_venv=True, tags=['lint-files'])
@@ -60,3 +61,9 @@ def lint_alert(session: nox.Session, folder_name: str = 'src') -> None:
     session.run("isort", folder_name, "--line-length=300", external=True)
     session.run("black", folder_name, "--line-length=300", external=True)
     # session.run("mypy", folder_name, external=True)
+
+
+@nox.session(python=python_versions, reuse_venv=True, tags=['exec-tests'])
+def exec_tests(session: nox.Session) -> None:
+    """Lint files"""
+    session.run("pytest", "-v", "-s", external=True)

@@ -8,7 +8,7 @@ from src.scripts.exceptions import CustomErrors
 
 
 def prepare_file_zones(directory_paths):
-    # Create directories if they don't exist
+    """Create directories if they don't exist"""
     for directory in directory_paths:
         os.makedirs(directory, exist_ok=True)
 
@@ -82,9 +82,11 @@ def gen_dataframe(dataset_file_path, file_schema_path):
 
     if dataset_file_path.endswith(".dat"):
         sep = "::"
+        header = None
     else:
         sep = ","
+        header = 0
 
     if dataset_file_path.endswith(".dat") or dataset_file_path.endswith(".csv"):
-        dataset_df = pd.read_csv(dataset_file_path, sep=sep, engine="python", header=None, encoding="ISO-8859-1", names=column_names)
+        dataset_df = pd.read_csv(dataset_file_path, sep=sep, engine="python", header=header, encoding="ISO-8859-1", names=column_names)
         return dataset_df
