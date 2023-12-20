@@ -16,7 +16,12 @@
    * Verify Data quality and generate curated .csv files with schema applied. Schema files available here - [src/schema](src%2Fschema) and curated files loaded into [src/data/02_curated](src%2Fdata%2F02_curated)
    * Verify data quality, Apply transformation and Load final transformed dataset as .csv to Data Product layer [src/data/03_data_product](src%2Fdata%2F03_data_product)
 4. Additionally reusable functions and custom exceptions to handle errors are located at - [src/scripts](src%2Fscripts)
-5. [Unit Tests](tests): Test the code functionality and Business Logic applied
+5. [Unit Tests](tests): Test the code functionality and Business Logic applied, Sample tests which include
+   * Test if all movies in raw file are available in the final movies_with_ratings_stats dataset
+   * Verify the schema of final movies_with_ratings_stats dataset
+   * Verify the schema of final top_movies_per_user dataset
+   * Test if all users in raw file are available in the final top_movies_per_user dataset
+   * Test if each user has 3 records and each user has unique movieid
 
 ### Repo Structure
 ```

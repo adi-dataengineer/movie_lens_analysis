@@ -47,13 +47,13 @@ class DataProcessor:
             dataset_df = gen_dataframe(raw_file_file_path, file_schema_path)
 
             # Perform validation on the DataFrame
-            self.verify_data_product_quality(file_name=validation_dataset_name, dqt_class=validator_name,
-                                             dataset_df=dataset_df, file_schema_path=file_schema_path)
+            self.verify_data_product_quality(file_name=validation_dataset_name, dqt_class=validator_name, dataset_df=dataset_df, file_schema_path=file_schema_path)
 
             print("Loading file to Curated Zone")
             self.df_to_csv(target_path=self.curated_zone_path, df=dataset_df, file_name=validation_dataset_name)
 
-    def verify_dq_load_data_product1(self):
+    def verify_dq_load_dp_movie_ratings(self):
+        """Create the data product - All movies with a rating"""
         # Step 1: Read curated movies.csv and ratings.csv into Pandas DataFrames
         movies_df = pd.read_csv(f"{self.curated_zone_path}/movies.csv")
         ratings_df = pd.read_csv(f"{self.curated_zone_path}/ratings.csv")
@@ -64,16 +64,17 @@ class DataProcessor:
         movies_with_ratings_stats = pd.merge(movies_df, movie_ratings_stats, on="movieid", how="left")
 
         # Step 3: Perform Data Quality
-        file_name = self.movies_with_ratings_stats_dataset_config['file_name']
+        file_name = self.movies_with_ratings_stats_dataset_config["file_name"]
         file_schema_path = f"{self.datasets_schema_path}/{self.movies_with_ratings_stats_dataset_config['schema_file_name']}"
-        dqt_class = self.movies_with_ratings_stats_dataset_config['dqt_class']
+        dqt_class = self.movies_with_ratings_stats_dataset_config["dqt_class"]
         self.verify_data_product_quality(file_name=file_name, dqt_class=dqt_class, dataset_df=movies_with_ratings_stats, file_schema_path=file_schema_path)
 
         # Step 4: Load Curated
         print("Loading file to Data Product Zone")
         self.df_to_csv(target_path=self.data_product_zone_path, df=movies_with_ratings_stats, file_name=file_name)
 
-    def verify_dq_load_data_product2(self):
+    def verify_dq_load_dp_top_user_ratings(self):
+        """Create the data product - Top 3 movies per User"""
         # Step 1: Read curated movies.csv and ratings.csv into Pandas DataFrames
         movies_df = pd.read_csv(f"{self.curated_zone_path}/movies.csv")
         ratings_df = pd.read_csv(f"{self.curated_zone_path}/ratings.csv")
@@ -83,9 +84,9 @@ class DataProcessor:
         top_movies_per_user = pd.merge(top_movies_per_user, movies_df, on="movieid", how="left")
 
         # Step 3: Perform Data Quality
-        file_name = self.top_movies_per_user_dataset_config['file_name']
+        file_name = self.top_movies_per_user_dataset_config["file_name"]
         file_schema_path = f"{self.datasets_schema_path}/{self.top_movies_per_user_dataset_config['schema_file_name']}"
-        dqt_class = self.top_movies_per_user_dataset_config['dqt_class']
+        dqt_class = self.top_movies_per_user_dataset_config["dqt_class"]
         self.verify_data_product_quality(file_name=file_name, dqt_class=dqt_class, dataset_df=top_movies_per_user, file_schema_path=file_schema_path)
 
         # Step 4: Load Curated
@@ -94,6 +95,7 @@ class DataProcessor:
 
     @staticmethod
     def verify_data_product_quality(file_name, dqt_class, dataset_df, file_schema_path):
+        """Helper to execute the DQTs"""
         dqt_result = validate_dataset(validator_name=dqt_class, df=dataset_df, file_schema_path=file_schema_path)
         all_true_results = all(dqt_result.values())
 
@@ -106,24 +108,26 @@ class DataProcessor:
 
     @staticmethod
     def df_to_csv(target_path, df, file_name, float_format="%.2f", **kwargs):
+        """Helper to generate the CSV files"""
         df.to_csv(f"{target_path}/{file_name}.csv", index=False, float_format=float_format, **kwargs)
 
 
 def movie_lens_analysis_pipeline(config_path):
+    """Data pipeline to transform and generate the data products along with DQT verification"""
     processor = DataProcessor(config_path)
 
     # This process creates the basic folder structure for persisting the files
     processor.prepare_infra()
 
-    # Extract .dat files from the zip file
+    # Extract raw .dat files from the zip file to Raw Layer
     processor.staging_to_raw()
 
-    # Verify data quality and Load to Curated layer
+    # Verify data quality and Load transformed data to Curated layer
     processor.verify_dq_load_curated()
 
-    # Verify data quality and Load to Data Product layer
-    processor.verify_dq_load_data_product1()
-    processor.verify_dq_load_data_product2()
+    # Verify data quality and Load to dps to Data Product layer
+    processor.verify_dq_load_dp_movie_ratings()
+    processor.verify_dq_load_dp_top_user_ratings()
 
 
 if __name__ == "__main__":
